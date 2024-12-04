@@ -1,48 +1,60 @@
 import React, { useEffect, useState } from 'react';
-import { View, Text, FlatList, StyleSheet } from 'react-native';
-import firestore from '@react-native-firebase/firestore';
+import { View, Text, Button, FlatList, StyleSheet } from 'react-native';
+import firebase from 'firebase/app';
+import 'firebase/firestore';
 
-const JobsListScreen = () => {
+const JobListScreen = ({ navigation }) => {
   const [jobs, setJobs] = useState([]);
 
   useEffect(() => {
-    const unsubscribe = firestore()
-      .collection('jobs') // Nome da coleção no Firestore
-      .onSnapshot(snapshot => {
+    const fetchJobs = async () => {
+      try {
+        const snapshot = await firebase.firestore().collection('jobs').get();
         const jobList = snapshot.docs.map(doc => ({
           id: doc.id,
           ...doc.data(),
         }));
         setJobs(jobList);
-      });
+      } catch (error) {
+        console.error("Erro ao carregar vagas: ", error);
+      }
+    };
 
-    return () => unsubscribe();
+    fetchJobs();
   }, []);
-
-  const renderJob = ({ item }) => (
-    <View style={styles.jobItem}>
-      <Text style={styles.jobTitle}>{item.title}</Text>
-      <Text>{item.description}</Text>
-    </View>
-  );
 
   return (
     <View style={styles.container}>
-      <Text style={styles.header}>Vagas Disponíveis</Text>
       <FlatList
         data={jobs}
-        keyExtractor={item => item.id}
-        renderItem={renderJob}
+        keyExtractor={(item) => item.id}
+        renderItem={({ item }) => (
+          <View style={styles.jobItem}>
+            <Text style={styles.jobTitle}>{item.title}</Text>
+            <Button
+              title="Ver Detalhes"
+              onPress={() => navigation.navigate('JobDetails', { jobId: item.id })}
+            />
+          </View>
+        )}
       />
     </View>
   );
 };
 
 const styles = StyleSheet.create({
-  container: { flex: 1, padding: 20 },
-  header: { fontSize: 20, fontWeight: 'bold', marginBottom: 10 },
-  jobItem: { marginBottom: 15, padding: 10, backgroundColor: '#f1f1f1', borderRadius: 5 },
-  jobTitle: { fontSize: 16, fontWeight: 'bold' },
+  container: {
+    flex: 1,
+    padding: 20,
+    backgroundColor: '#fff',
+  },
+  jobItem: {
+    marginBottom: 20,
+  },
+  jobTitle: {
+    fontSize: 18,
+    fontWeight: 'bold',
+  },
 });
 
-export default JobsListScreen;
+export default JobListScreen;
