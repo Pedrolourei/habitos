@@ -5,24 +5,19 @@ const multer = require('multer');
 const path = require('path');
 const cors = require('cors');
 
-// Inicializar o Firebase com credenciais
 admin.initializeApp({
   credential: admin.credential.cert(require('./firebase-key.json'))
 });
 
-// Conectar ao Firestore
 const db = admin.firestore();
 
 const app = express();
 const PORT = 3000;
 
-// Middleware para analisar o corpo da requisição como JSON
 app.use(bodyParser.json());
 
-// Habilitar CORS
 app.use(cors());
 
-// Configuração do Multer para upload de arquivos (currículo)
 const storage = multer.diskStorage({
   destination: (req, file, cb) => {
     cb(null, 'uploads/');
@@ -44,7 +39,6 @@ const upload = multer({
   }
 });
 
-// Middleware para verificar se o usuário é um administrador
 const authenticateAdmin = async (req, res, next) => {
   const idToken = req.headers.authorization?.split('Bearer ')[1];
 
@@ -67,7 +61,6 @@ const authenticateAdmin = async (req, res, next) => {
   }
 };
 
-// Middleware para verificar se o usuário é um candidato ou empresa
 const authenticateUser = async (req, res, next) => {
   const idToken = req.headers.authorization?.split('Bearer ')[1];
 
@@ -86,17 +79,16 @@ const authenticateUser = async (req, res, next) => {
 
 // ---------------------- Rotas para Administrador -----------------------
 
-// Endpoint para criar uma nova vaga (somente Admin)
 app.post('/admin/jobs', authenticateAdmin, async (req, res) => {
   const { title, description, location, salary } = req.body;
   try {
     const jobData = {
-      employerId: req.user.uid,  // Associado ao admin ou empregador
+      employerId: req.user.uid, 
       title,
       description,
       location,
       salary,
-      status: 'open',  // Status inicial da vaga
+      status: 'open', 
       createdAt: new Date(),
     };
 
@@ -107,7 +99,6 @@ app.post('/admin/jobs', authenticateAdmin, async (req, res) => {
   }
 });
 
-// Endpoint para editar uma vaga (somente Admin)
 app.put('/admin/jobs/:jobId', authenticateAdmin, async (req, res) => {
   const { jobId } = req.params;
   const { title, description, location, salary, status } = req.body;
@@ -124,7 +115,7 @@ app.put('/admin/jobs/:jobId', authenticateAdmin, async (req, res) => {
       description,
       location,
       salary,
-      status: status || jobDoc.data().status, // Atualiza o status se fornecido
+      status: status || jobDoc.data().status, 
     });
 
     res.status(200).json({ message: 'Vaga editada com sucesso' });
@@ -133,7 +124,6 @@ app.put('/admin/jobs/:jobId', authenticateAdmin, async (req, res) => {
   }
 });
 
-// Endpoint para ocultar uma vaga (somente Admin)
 app.put('/admin/jobs/:jobId/hide', authenticateAdmin, async (req, res) => {
   const { jobId } = req.params;
 
@@ -151,7 +141,6 @@ app.put('/admin/jobs/:jobId/hide', authenticateAdmin, async (req, res) => {
   }
 });
 
-// Endpoint para fechar uma vaga (somente Admin)
 app.put('/admin/jobs/:jobId/close', authenticateAdmin, async (req, res) => {
   const { jobId } = req.params;
 
@@ -169,7 +158,6 @@ app.put('/admin/jobs/:jobId/close', authenticateAdmin, async (req, res) => {
   }
 });
 
-// Endpoint para excluir uma vaga (somente Admin)
 app.delete('/admin/jobs/:jobId', authenticateAdmin, async (req, res) => {
   const { jobId } = req.params;
 
@@ -186,8 +174,7 @@ app.delete('/admin/jobs/:jobId', authenticateAdmin, async (req, res) => {
     res.status(500).json({ error: 'Erro ao excluir vaga' });
   }
 });
-
-// Endpoint para reabrir uma vaga (somente Admin)
+)
 app.put('/admin/jobs/:jobId/reopen', authenticateAdmin, async (req, res) => {
   const { jobId } = req.params;
 
@@ -207,7 +194,6 @@ app.put('/admin/jobs/:jobId/reopen', authenticateAdmin, async (req, res) => {
 
 // ------------------- Funções para Gerenciar Candidaturas -----------------
 
-// Endpoint para visualizar candidaturas de um candidato (somente Admin)
 app.get('/admin/candidates/:userId/applications', authenticateAdmin, async (req, res) => {
   const { userId } = req.params;
 
@@ -227,11 +213,9 @@ app.get('/admin/candidates/:userId/applications', authenticateAdmin, async (req,
   }
 });
 
-// Endpoint para aplicar um candidato a uma vaga (Admin pode fazer isso)
 app.post('/admin/apply/:jobId', authenticateAdmin, async (req, res) => {
   const { jobId } = req.params;
-  const { userId } = req.body;  // O ID do candidato
-
+  const { userId } = req.body;  
   try {
     const jobDoc = await db.collection('jobs').doc(jobId).get();
     const userDoc = await db.collection('users').doc(userId).get();
@@ -240,7 +224,6 @@ app.post('/admin/apply/:jobId', authenticateAdmin, async (req, res) => {
       return res.status(404).json({ error: 'Vaga ou Candidato não encontrado' });
     }
 
-    // Cria uma candidatura no Firestore
     await db.collection('applications').add({
       jobId,
       userId,
@@ -254,7 +237,6 @@ app.post('/admin/apply/:jobId', authenticateAdmin, async (req, res) => {
   }
 });
 
-// Inicializar o servidor
 app.listen(PORT, () => {
   console.log(`Servidor rodando na porta ${PORT}`);
 });
