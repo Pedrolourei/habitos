@@ -44,7 +44,7 @@ const CreateJobScreen = ({ navigation }) => {
   const handlePayment = async () => {
     try {
       const { error } = await initPaymentSheet({
-        paymentIntentClientSecret: 'client_secret_aqui',
+        paymentIntentClientSecret: '',
       });
 
       if (error) {
