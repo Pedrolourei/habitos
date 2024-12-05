@@ -1,0 +1,21 @@
+[debug] [2024-12-05T22:51:00.538Z] ----------------------------------------------------------------------
+[debug] [2024-12-05T22:51:00.541Z] Command:       C:\Program Files\nodejs\node.exe C:\Users\pedro\AppData\Roaming\npm\node_modules\firebase-tools\lib\bin\firebase.js init
+[debug] [2024-12-05T22:51:00.541Z] CLI Version:   13.28.0
+[debug] [2024-12-05T22:51:00.541Z] Platform:      win32
+[debug] [2024-12-05T22:51:00.541Z] Node Version:  v22.9.0
+[debug] [2024-12-05T22:51:00.542Z] Time:          Thu Dec 05 2024 19:51:00 GMT-0300 (Horário Padrão de Brasília)
+[debug] [2024-12-05T22:51:00.542Z] ----------------------------------------------------------------------
+[debug] 
+[debug] [2024-12-05T22:51:00.551Z] > command requires scopes: ["email","openid","https://www.googleapis.com/auth/cloudplatformprojects.readonly","https://www.googleapis.com/auth/firebase","https://www.googleapis.com/auth/cloud-platform"]
+[debug] [2024-12-05T22:51:00.551Z] > authorizing via signed-in user (pedroseko@gmail.com)
+[info] 
+     ######## #### ########  ######## ########     ###     ######  ########
+     ##        ##  ##     ## ##       ##     ##  ##   ##  ##       ##
+     ######    ##  ########  ######   ########  #########  ######  ######
+     ##        ##  ##    ##  ##       ##     ## ##     ##       ## ##
+     ##       #### ##     ## ######## ########  ##     ##  ######  ########
+
+You're about to initialize a Firebase project in this directory:
+
+  C:\Users\pedro\Downloads\vagas-candidatos\habitos-main\habitos
+
